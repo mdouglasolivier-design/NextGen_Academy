@@ -5,8 +5,21 @@ import { getCourses } from "@/lib/api/courses";
 
 export const metadata: Metadata = { title: "Courses" };
 
-export default async function CoursesPage() {
-  const { data: courses, error } = await getCourses();
+export default async function CoursesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string | string[] }>;
+}) {
+  const sp = await searchParams;
+  const q = ((Array.isArray(sp.q) ? sp.q[0] : sp.q) ?? "").trim();
+  const { data, error } = await getCourses();
+  const needle = q.toLowerCase();
+  const courses = error
+    ? []
+    : needle
+      ? data.filter((c) => `${c.title} ${c.description} ${c.level}`.toLowerCase().includes(needle))
+      : data;
+  const total = error ? 0 : data.length;
 
   return (
     <main className="mx-auto max-w-6xl px-5 py-14">
@@ -15,9 +28,23 @@ export default async function CoursesPage() {
         Every course is free. Pass the final assessment to earn a certificate.
       </p>
 
+      {q && !error && (
+        <p className="mt-4 text-sm text-muted">
+          {courses.length} {courses.length === 1 ? "result" : "results"} for &ldquo;{q}&rdquo;
+        </p>
+      )}
+
       <div className="mt-10">
         {error ? (
           <CoursesUnavailable />
+        ) : total > 0 && courses.length === 0 ? (
+          <div className="rounded-[14px] border border-rule bg-surface p-8">
+            <p className="font-display text-xl font-semibold">No courses match &ldquo;{q}&rdquo;.</p>
+            <p className="mt-2 text-ink-soft">Try a different word, or browse every course.</p>
+            <Link href="/courses" className="mt-4 inline-block font-semibold text-spine-blue hover:text-blue-deep">
+              Clear search
+            </Link>
+          </div>
         ) : courses.length === 0 ? (
           <div className="rounded-[14px] border border-rule bg-surface p-8">
             <p className="font-display text-xl font-semibold">No courses are published yet.</p>
@@ -25,7 +52,7 @@ export default async function CoursesPage() {
               Create an account now and you&rsquo;ll be ready to enroll when the first course opens.
             </p>
             <Link href="/register" className="mt-4 inline-block font-semibold text-spine-blue hover:text-blue-deep">
-              Create free account
+              Create Account
             </Link>
           </div>
         ) : (

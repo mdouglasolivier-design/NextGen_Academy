@@ -23,7 +23,7 @@ export default function AboutPage() {
         </p>
       </div>
       <div className="mt-10 flex flex-wrap gap-3">
-        <ButtonLink href="/register">Create free account</ButtonLink>
+        <ButtonLink href="/register">Create Account</ButtonLink>
         <ButtonLink href="/verify" variant="secondary">
           Verify a certificate
         </ButtonLink>

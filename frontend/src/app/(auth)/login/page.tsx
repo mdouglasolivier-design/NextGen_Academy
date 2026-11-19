@@ -19,7 +19,7 @@ export default async function LoginPage({
         <>
           New here?{" "}
           <Link href="/register" className="font-semibold text-spine-blue hover:text-blue-deep">
-            Create a free account
+            Create Account
           </Link>
         </>
       }

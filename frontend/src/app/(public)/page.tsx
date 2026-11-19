@@ -27,7 +27,7 @@ export default async function Home() {
             confirm it in seconds, no email chains needed.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <ButtonLink href="/register">Create free account</ButtonLink>
+            <ButtonLink href="/register">Create Account</ButtonLink>
             <ButtonLink href="/courses" variant="secondary">
               Browse courses
             </ButtonLink>

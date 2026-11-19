@@ -55,9 +55,13 @@ export default function RegisterPage() {
 
   return (
     <AuthShell
-      title="Create your free account"
+      title="Create Account"
       subtitle="No fees. Finish a course and pass the assessment to earn a certificate."
       panelTitle="Your name on a certificate people can trust."
+      image="/assets/auth/create-account.jpg"
+      imageAlt="A smiling NextGen Academy student holding her notebooks"
+      variant="cutout"
+      compact
       footer={
         <>
           Already have an account?{" "}
@@ -67,7 +71,7 @@ export default function RegisterPage() {
         </>
       }
     >
-      <form onSubmit={submit} className="space-y-5" noValidate>
+      <form onSubmit={submit} className="space-y-3 [&_input]:py-2 [&_label]:mb-1 [&_p]:mt-1" noValidate>
         {formError && <FormAlert>{formError}</FormAlert>}
         <Field
           label="Full name"
@@ -104,7 +108,7 @@ export default function RegisterPage() {
           required
         />
         <Button type="submit" loading={loading} className="w-full">
-          Create account
+          Create Account
         </Button>
       </form>
     </AuthShell>
