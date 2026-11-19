@@ -1,69 +1,39 @@
-"use client";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import AuthShell from "@/components/auth/AuthShell";
-import { Button } from "@/components/ui/Button";
-import Field, { FormAlert } from "@/components/ui/Field";
-import { staffLogin } from "@/lib/staff/api";
+import { STAFF_ROLES } from "@/lib/staff/roles";
 
-export default function StaffLogin() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+export const metadata: Metadata = { title: "Staff sign in" };
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await staffLogin(email.trim(), password);
-      router.push("/staff");
-    } catch (err) {
-      setError((err as Error).message);
-      setLoading(false);
-    }
-  }
-
+export default function StaffLoginHub() {
   return (
     <AuthShell
       title="Staff sign in"
-      subtitle="For instructors, administrators and support staff."
+      subtitle="Choose your role to continue."
       panelTitle="Run the academy."
-      panelText="Your dashboard shows only what your role needs."
+      panelText="Each role sees only the tools it needs."
       footer={
         <>
-          Are you a student?{" "}
+          Are you a learner?{" "}
           <Link href="/login" className="font-semibold text-spine-blue hover:text-blue-deep">
             Log in here
           </Link>
         </>
       }
     >
-      <form onSubmit={submit} className="space-y-5" noValidate>
-        {error && <FormAlert>{error}</FormAlert>}
-        <Field
-          label="Work email"
-          type="email"
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <Field
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <Button type="submit" loading={loading} className="w-full">
-          Sign in
-        </Button>
-      </form>
+      <ul className="space-y-3">
+        {STAFF_ROLES.map((r) => (
+          <li key={r.slug}>
+            <Link
+              href={`/staff-login/${r.slug}`}
+              className="block rounded-[14px] border border-rule bg-surface px-5 py-4 transition-colors hover:border-ink"
+            >
+              <span className="font-display text-lg font-semibold">{r.title}</span>
+              <span className="mt-0.5 block text-[15px] text-ink-soft">{r.summary}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </AuthShell>
   );
 }

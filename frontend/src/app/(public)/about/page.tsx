@@ -15,15 +15,15 @@ export default function AboutPage() {
         <p>
           A certificate is only useful if people believe it. Every one we issue has a unique code. Anyone, including an
           employer or a university admissions team, can enter that code on our Verify page and see the holder, the
-          course and whether it&rsquo;s still valid.
+          course and whether it’s still valid.
         </p>
         <p>
-          We&rsquo;re starting with free certificates, and we&rsquo;re building the platform in the open: courses, assessments and
+          We’re starting with free certificates, and we’re building the platform in the open: courses, assessments and
           verification first, then more from there.
         </p>
       </div>
       <div className="mt-10 flex flex-wrap gap-3">
-        <ButtonLink href="/register">Create Account</ButtonLink>
+        <ButtonLink href="/register">Create account</ButtonLink>
         <ButtonLink href="/verify" variant="secondary">
           Verify a certificate
         </ButtonLink>

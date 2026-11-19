@@ -15,7 +15,7 @@ export default function SiteFooter() {
           <h2 className="font-display text-base font-semibold text-white">Learn</h2>
           <ul className="mt-3 space-y-2 text-[15px]">
             <li><Link className="hover:text-white" href="/courses">Browse courses</Link></li>
-            <li><Link className="hover:text-white" href="/register">Create Account</Link></li>
+            <li><Link className="hover:text-white" href="/register">Create account</Link></li>
             <li><Link className="hover:text-white" href="/login">Log in</Link></li>
           </ul>
         </div>
@@ -29,7 +29,7 @@ export default function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10 py-5 text-center text-sm text-white/50">
-        &copy; {new Date().getFullYear()} NextGen Academy. Kigali, Rwanda.
+        © {new Date().getFullYear()} NextGen Academy. Kigali, Rwanda.
       </div>
     </footer>
   );

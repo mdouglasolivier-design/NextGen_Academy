@@ -4,10 +4,10 @@ import VerifyForm from "@/components/site/VerifyForm";
 import { getCourses } from "@/lib/api/courses";
 import Link from "next/link";
 
-// The hero's memorable element: the logo's three books, each one a step of the journey.
+// The hero’s memorable element: the logo’s three books, each one a step of the journey.
 const spines = [
   { label: "Learn", note: "Self-paced lessons, free.", bg: "bg-spine-green", w: "w-[88%]", shift: "ml-0" },
-  { label: "Pass", note: "Take the assessment when you're ready.", bg: "bg-spine-red", w: "w-full", shift: "sm:-ml-3" },
+  { label: "Pass", note: "Take the assessment when you’re ready.", bg: "bg-spine-red", w: "w-full", shift: "sm:-ml-3" },
   { label: "Share", note: "Send a certificate anyone can verify.", bg: "bg-spine-blue", w: "w-[82%]", shift: "sm:ml-2" },
 ];
 
@@ -27,7 +27,7 @@ export default async function Home() {
             confirm it in seconds, no email chains needed.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <ButtonLink href="/register">Create Account</ButtonLink>
+            <ButtonLink href="/register">Create account</ButtonLink>
             <ButtonLink href="/courses" variant="secondary">
               Browse courses
             </ButtonLink>
@@ -60,7 +60,7 @@ export default async function Home() {
             <CoursesUnavailable />
           ) : featured.length === 0 ? (
             <p className="rounded-[14px] border border-rule bg-surface p-6 text-ink-soft">
-              The first courses are on their way. Create an account and we&rsquo;ll show them here as soon as they open.
+              The first courses are on their way. Create an account and we’ll show them here as soon as they open.
             </p>
           ) : (
             <div className="grid gap-4 md:grid-cols-3">
@@ -74,9 +74,9 @@ export default async function Home() {
 
       <section className="mx-auto max-w-6xl px-5 py-12">
         <div className="rounded-[18px] bg-ink px-6 py-10 text-white sm:px-12">
-          <h2 className="max-w-xl text-3xl font-bold">Checking someone&rsquo;s certificate?</h2>
+          <h2 className="max-w-xl text-3xl font-bold">Checking someone’s certificate?</h2>
           <p className="mt-3 max-w-xl text-white/70">
-            Enter the code on the certificate. You&rsquo;ll see the holder&rsquo;s name, the course, and whether it&rsquo;s still valid.
+            Enter the code on the certificate. You’ll see the holder’s name, the course, and whether it’s still valid.
           </p>
           <div className="mt-6 max-w-2xl">
             <VerifyForm onDark />

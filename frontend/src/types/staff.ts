@@ -10,3 +10,18 @@ export interface StaffDashboard {
   today: TodayItem[];
   sections: NavSection[];
 }
+
+export interface StaffCourse {
+  id: string;
+  title: string;
+  slug: string;
+  status: "draft" | "published";
+  level: string;
+  estimated_hours: number;
+  modules: number;
+  lessons: number;
+  learners: number;
+  completed: number;
+  instructor: string | null;
+  updated_at: string;
+}

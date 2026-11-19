@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
+import Logo from "@/components/ui/Logo";
 import { clearToken, getToken, staffApi } from "@/lib/staff/api";
 import type { StaffDashboard } from "@/types/staff";
 
@@ -19,10 +20,13 @@ export default function StaffShell({ children }: { children: React.ReactNode }) 
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!getToken()) return router.replace("/staff-login");
+    if (!getToken()) {
+      router.replace("/staff-login");
+      return;
+    }
     staffApi<StaffDashboard>("/staff/dashboard/")
       .then(setData)
-      .catch((e) => {
+      .catch((e: Error) => {
         if (e.message === "unauthorized") {
           clearToken();
           router.replace("/staff-login");
@@ -30,74 +34,109 @@ export default function StaffShell({ children }: { children: React.ReactNode }) 
       });
   }, [router]);
 
-  if (error) return <p className="p-8 text-red-600">{error}</p>;
-  if (!data) return <p className="p-8 text-gray-500">Loading dashboard…</p>;
+  if (error) {
+    return (
+      <div className="grid min-h-screen place-items-center px-5">
+        <div role="alert" className="max-w-md rounded-[14px] border border-rule bg-surface p-6">
+          <p className="font-display text-xl font-semibold">The dashboard isn&rsquo;t loading.</p>
+          <p className="mt-1 text-ink-soft">{error}</p>
+          <button onClick={() => location.reload()} className="mt-4 font-semibold text-spine-blue hover:text-blue-deep">
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
+  if (!data) {
+    return (
+      <div className="grid min-h-screen place-items-center text-muted" role="status">
+        Loading your dashboard&hellip;
+      </div>
+    );
+  }
 
   const logout = () => {
     clearToken();
     router.replace("/staff-login");
   };
   const href = (key: string) => (key === "overview" ? "/staff" : `/staff/${key}`);
-  const active = (key: string) => pathname === href(key);
+  const links = [
+    ...data.sections.map((s) => ({ href: href(s.key), label: s.label })),
+    { href: "/staff/activity", label: "My activity log" },
+  ];
+  const isActive = (h: string) => pathname === h;
 
   return (
     <StaffContext.Provider value={data}>
-      <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
-        {/* Top bar */}
-        <header className="flex items-center gap-4 border-b bg-white px-4 py-3">
-          <Link href="/staff" className="text-lg font-bold">University Staff</Link>
-          <input
-            placeholder="Search…"
-            className="ml-4 hidden w-full max-w-md rounded border px-3 py-1.5 text-sm md:block"
-          />
-          <div className="ml-auto flex items-center gap-4">
-            <button title="Notifications" aria-label="Notifications">🔔</button>
-            <button title="Messages" aria-label="Messages">✉️</button>
-            <details className="relative">
-              <summary className="cursor-pointer list-none rounded border px-3 py-1.5 text-sm">
-                {data.user.name || data.user.email} ▾
-              </summary>
-              <div className="absolute right-0 z-10 mt-2 w-72 rounded border bg-white p-4 text-sm shadow">
-                <p className="font-semibold">{data.user.name}</p>
-                <p className="text-gray-500">{data.role_title}</p>
-                <p className="mt-2 text-xs text-gray-500">
-                  Last login: {data.session.last_login ? new Date(data.session.last_login).toLocaleString() : "—"}
-                </p>
-                <ul className="mt-3 space-y-1 text-gray-400">
-                  <li>Account · Password · 2FA (soon)</li>
-                  <li>Language · Theme (soon)</li>
-                </ul>
-                <button onClick={logout} className="mt-3 w-full rounded bg-black px-3 py-1.5 text-white">
-                  Log out
-                </button>
-              </div>
-            </details>
-          </div>
+      <div className="flex min-h-screen flex-col">
+        <header className="flex items-center gap-4 border-b border-rule bg-surface px-5 py-3">
+          <Logo href="/staff" />
+          <span className="hidden rounded-md bg-ink/[0.06] px-2 py-0.5 text-sm font-medium text-ink-soft sm:inline">
+            Staff
+          </span>
+          <details className="relative ml-auto">
+            <summary className="cursor-pointer list-none rounded-lg border border-rule px-3.5 py-2 text-[15px] font-medium hover:border-ink">
+              {data.user.name || data.user.email}
+            </summary>
+            <div className="absolute right-0 z-10 mt-2 w-72 rounded-[14px] border border-rule bg-surface p-4 text-[15px] shadow-[0_8px_24px_rgba(18,21,28,0.12)]">
+              <p className="font-display text-lg font-semibold">{data.user.name}</p>
+              <p className="text-ink-soft">{data.role_title}</p>
+              <p className="mt-1 break-all text-sm text-muted">{data.user.email}</p>
+              <p className="mt-3 text-sm text-muted">
+                Last login:{" "}
+                {data.session.last_login ? new Date(data.session.last_login).toLocaleString() : "not recorded"}
+              </p>
+              <button
+                onClick={logout}
+                className="mt-4 w-full rounded-lg bg-ink px-3 py-2 font-semibold text-white hover:bg-ink-soft"
+              >
+                Log out
+              </button>
+            </div>
+          </details>
         </header>
 
+        {/* Small screens: a scrollable row instead of the sidebar */}
+        <nav aria-label="Staff mobile" className="flex gap-1 overflow-x-auto border-b border-rule bg-surface px-3 py-2 lg:hidden">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              aria-current={isActive(l.href) ? "page" : undefined}
+              className={`whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ${
+                isActive(l.href) ? "bg-ink text-white" : "text-ink-soft"
+              }`}
+            >
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+
         <div className="flex flex-1">
-          {/* Left navigation: only this role's sections */}
-          <nav className="w-60 shrink-0 border-r bg-slate-900 p-3 text-sm text-slate-200">
-            <p className="mb-3 px-2 text-xs uppercase tracking-wide text-slate-400">{data.role_title}</p>
-            <ul className="space-y-1">
-              {data.sections.map((s) => (
-                <li key={s.key}>
+          <nav aria-label="Staff" className="hidden w-64 shrink-0 bg-ink px-3 py-6 text-[15px] text-white/75 lg:block">
+            <p className="mb-3 px-3 font-display text-base font-semibold text-white">{data.role_title}</p>
+            <ul className="space-y-0.5">
+              {links.map((l, i) => (
+                <li key={l.href} className={i === links.length - 1 ? "mt-4 border-t border-white/10 pt-4" : ""}>
                   <Link
-                    href={href(s.key)}
-                    className={`block rounded px-2 py-1.5 ${active(s.key) ? "bg-slate-700 text-white" : "hover:bg-slate-800"}`}
+                    href={l.href}
+                    aria-current={isActive(l.href) ? "page" : undefined}
+                    className={`block rounded-md border-l-[3px] px-3 py-2 ${
+                      isActive(l.href)
+                        ? "border-spine-green bg-white/10 font-medium text-white"
+                        : "border-transparent hover:bg-white/5 hover:text-white"
+                    }`}
                   >
-                    {s.label}
+                    {l.label}
                   </Link>
                 </li>
               ))}
             </ul>
-            <div className="mt-6 border-t border-slate-700 pt-3">
-              <Link href="/staff/activity" className="block rounded px-2 py-1.5 hover:bg-slate-800">My activity log</Link>
-              <a href="/help" className="block rounded px-2 py-1.5 hover:bg-slate-800">Help center</a>
-            </div>
           </nav>
 
-          <main className="flex-1 p-6">{children}</main>
+          <main className="min-w-0 flex-1 px-5 py-8 lg:px-10">
+            <div className="mx-auto max-w-5xl">{children}</div>
+          </main>
         </div>
       </div>
     </StaffContext.Provider>
