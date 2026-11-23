@@ -1,41 +1,56 @@
-# University Platform (Phase 1: Free Certificates)
+# NextGen Academy
 
-Stack: Django + DRF (backend) · Next.js + TypeScript (frontend) · PostgreSQL
+Frontend for **NextGen Academy**, an online learning platform: course catalog, course pages, student dashboard, lessons, assessments and demo certificates.
 
-## Run the backend
-    cd backend
-    python -m venv .venv
-    source .venv/bin/activate        # Windows: .venv\Scripts\activate
-    pip install -r requirements/dev.txt
-    cp .env.example .env
-    python manage.py makemigrations accounts common academics learning assessments certificates staff
-    python manage.py migrate
-    python manage.py createsuperuser
-    python manage.py runserver
+> **Frontend preview.** There is no backend. Accounts, enrollments, progress and certificates are demo data stored in the browser (`localStorage`). No real authentication or payments.
 
-Admin: http://localhost:8000/admin/   API docs: http://localhost:8000/api/docs/
+## Stack
 
-## Run the frontend
-    cd frontend
+React 19, TypeScript, Vite, Tailwind CSS v4, React Router
+
+## Getting started
+
     npm install
-    npm run dev
+    npm run dev        # http://localhost:5173
+    npm run typecheck  # TypeScript check
+    npm run build      # production build in dist/
+    npm run preview    # serve the production build
 
-Frontend: http://localhost:3000
+## Routes
 
-## Demo data (local development only)
-    cd backend
-    python manage.py seed_demo
+| Path | Page |
+| --- | --- |
+| `/` | Home |
+| `/courses` (`?category=`) | Course catalog |
+| `/courses/:id` | Course detail |
+| `/login`, `/register`, `/forgot-password`, `/reset-password` | Auth (demo) |
+| `/checkout/:id` | Demo enrollment for paid courses |
+| `/dashboard` | Student dashboard (sign-in required) |
+| `/learn/:id`, `/quiz/:id` | Lessons and assessment (enrollment required) |
+| `/certificates`, `/certificates/:id`, `/verify` | Certificates |
+| `/about`, `/contact`, `/programs`, `/resources/:slug` | Static pages |
 
-Creates one staff login per role, a few learners with enrollments, and six demo courses (four published, two drafts).
-Re-running it is safe: courses that already exist are left alone, so your edits are kept. Use `--reset` to bring the
-demo courses back to their original content. It refuses to run unless `DEBUG=True`.
+## Project structure
 
-| Role | Sign-in page | Email |
-|------|--------------|-------|
-| Super admin | /staff-login/admin | admin@nextgen.test |
-| Instructor | /staff-login/instructor | instructor@nextgen.test |
-| Reviewer | /staff-login/reviewer | reviewer@nextgen.test |
-| Moderator | /staff-login/moderator | moderator@nextgen.test |
-| Support | /staff-login/support | support@nextgen.test |
+    src/
+      App.tsx              Route table
+      main.tsx             Entry: Router + LearnerProvider
+      components/
+        ui/                Icon, Picture, SectionTitle, StatusMessage
+        layout/            Header, Footer, Layout, route guards
+        course/            CourseCard, CourseFilters
+        auth/              AuthShell, TextField
+      pages/               One file per screen (dashboard/ and static/ sub-folders)
+      context/             LearnerContext: demo session, enrollment, progress
+      data/                courses, quiz questions, navigation
+      hooks/               useLocalStorage
+      lib/                 filtering, storage, shared Tailwind classes
+      types/               Shared TypeScript types
 
-Password for all demo accounts: `NextGen-Demo-2026`
+## Connecting a real backend later
+
+All learner state lives in `src/context/LearnerContext.tsx` and course data in `src/data/courses.ts`. Replace those with API calls and the pages need little change.
+
+## Deploying
+
+This is a single-page app using client-side routing. Configure your host to serve `index.html` for unknown paths (a rewrite to `/index.html`).
